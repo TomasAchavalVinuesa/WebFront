@@ -1,0 +1,53 @@
+/* src/styles/Home.css */
+.home-container {
+  min-height: 100vh;
+  background-color: #bde0fe;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.home-card {
+  background: white;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  overflow: hidden;
+  text-align: center;
+}
+
+.home-header {
+  background-color: #468faf;
+  color: white;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+}
+
+.home-body {
+  background-color: #bde0fe;
+  padding: 20px;
+}
+
+.home-img {
+  width: 120px;
+  height: auto;
+  margin: 20px 0;
+}
+
+.emoji {
+  font-size: 40px;
+  margin: 10px 0;
+}
+
+button {
+  background-color: #468faf;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+}
