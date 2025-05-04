@@ -19,7 +19,7 @@ const Sidebar = ({ user, onLogin, onLogout, isOpen, toggleMenu }) => {
       </nav>
 
       <div className="auth-section">
-        <Link to="/Login">
+        <Link to="/login">
         {user ? (
           <button onClick={() => { onLogout(); toggleMenu(); }}>Cerrar sesión</button>
         ) : (

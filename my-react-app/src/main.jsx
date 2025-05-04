@@ -8,6 +8,7 @@ import {
 import App from './App.jsx';
 import Home from './views/Home/Home.jsx';
 import Login from './views/Login/Login.jsx';
+import Register from './views/Register/Register.jsx'
 
 const router = createBrowserRouter([
   {
@@ -17,6 +18,7 @@ const router = createBrowserRouter([
       { path: '/', element: <Home /> },
       { path: '/home', element: <Home /> },
       { path: '/login', element: <Login /> },
+      { path: '/register', element: <Register /> },
       { path: '/my-projects', element: <div>Esto debería de ser my projects</div> },
       { path: '/my-stories', element: <div>Esto debería de ser my stories</div> },
       { path: '/projects/:projectid', element: <div>Esto me tendría que mostrar 1 proyecto específico</div> },

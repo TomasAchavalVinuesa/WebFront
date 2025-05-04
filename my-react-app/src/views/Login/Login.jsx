@@ -1,113 +1,96 @@
 import React, { useState } from "react";
 import "./Login.css";
+import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+
+
 
 const Login = ({ onLogin }) => {
-  const [loginForm, setLoginForm] = useState({ usuario: "", contraseña: "" });
-  const [registerForm, setRegisterForm] = useState({
+  const [loginForm, setLoginForm] = useState({
     usuario: "",
-    email: "",
-    contraseña: "",
-    nombre: "",
-    apellido: ""
+    password: ""
   });
 
   const handleLoginChange = (e) => {
     setLoginForm({ ...loginForm, [e.target.name]: e.target.value });
   };
+  
+  const navigate = useNavigate();
 
-  const handleRegisterChange = (e) => {
-    setRegisterForm({ ...registerForm, [e.target.name]: e.target.value });
-  };
-
-  const handleLogin = () => {
-    // Simulación: podés validar acá con lógica real
-    if (loginForm.usuario && loginForm.contraseña) {
-      onLogin({ name: loginForm.usuario });
+  const handleLogin = async () => {
+    const { usuario, password } = loginForm;
+  
+    if (!usuario || !password) {
+      alert("Por favor, complete todos los campos.");
+      return;
     }
-  };
 
-  const handleRegister = () => {
-    console.log("Registrando usuario:", registerForm);
-    alert("Registro enviado (esto es solo una demo)");
+  
+    try {
+      const response = await fetch("http://localhost:5100/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          username: usuario,
+          password: password
+        })
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        alert(`Login exitoso. Token: ${data.token}`);
+        localStorage.setItem("token", data.token);
+        if (onLogin) onLogin(data);
+        navigate("/home");
+      } else {
+        alert(`Error al loguearse: ${data.message || "Error desconocido"}`);
+      }
+    } catch (error) {
+      console.error("Error al hacer la solicitud:", error);
+      alert("Ocurrió un error al conectarse con el servidor.");
+    }
   };
 
   return (
     <div className="login-container">
       <div className="login-card">
         <div className="login-header">
-          <span role="img" aria-label="menu">🍔</span>
-          <h2>Iniciar Sesión</h2>
+          <h2>Iniciar sesión</h2>
         </div>
 
-        {/* Sección Login */}
         <div className="login-section">
-          <h3>Iniciar sesión</h3>
+          <h3>Ingresa a tu cuenta</h3>
+
           <div className="form-row">
-            <label>Usuario</label>
+            <label htmlFor="usuario">Usuario</label>
             <input
+              id="usuario"
               name="usuario"
               value={loginForm.usuario}
               onChange={handleLoginChange}
             />
           </div>
+
           <div className="form-row">
-            <label>Contraseña</label>
+            <label htmlFor="password">Contraseña</label>
             <input
-              name="contraseña"
+              id="password"
+              name="password"
               type="password"
-              value={loginForm.contraseña}
+              value={loginForm.password}
               onChange={handleLoginChange}
             />
           </div>
-          <button onClick={handleLogin}>Ingresar</button>
-        </div>
-
-        {/* Sección Registro */}
-        <div className="login-section">
-          <h3>Registrarse</h3>
-          <div className="form-row">
-            <label>Usuario</label>
-            <input
-              name="usuario"
-              value={registerForm.usuario}
-              onChange={handleRegisterChange}
-            />
-          </div>
-          <div className="form-row">
-            <label>Email</label>
-            <input
-              name="email"
-              type="email"
-              value={registerForm.email}
-              onChange={handleRegisterChange}
-            />
-          </div>
-          <div className="form-row">
-            <label>Contraseña</label>
-            <input
-              name="contraseña"
-              type="password"
-              value={registerForm.contraseña}
-              onChange={handleRegisterChange}
-            />
-          </div>
-          <div className="form-row">
-            <label>Nombre</label>
-            <input
-              name="nombre"
-              value={registerForm.nombre}
-              onChange={handleRegisterChange}
-            />
-          </div>
-          <div className="form-row">
-            <label>Apellido</label>
-            <input
-              name="apellido"
-              value={registerForm.apellido}
-              onChange={handleRegisterChange}
-            />
-          </div>
-          <button onClick={handleRegister}>Registrar</button>
+            <Link to="/register">
+                <button>Registrarse</button>
+            </Link>
+            <Link to="/home">
+                <button>Home</button>
+            </Link>
+          <button onClick={handleLogin}>Iniciar sesión</button>
         </div>
       </div>
     </div>
