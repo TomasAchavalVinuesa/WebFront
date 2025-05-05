@@ -1,0 +1,33 @@
+.settings-container {
+    background: #c9ebff;
+    height: 100vh;
+    padding: 2rem;
+  }
+  
+  .settings-card {
+    background: #87cefa;
+    border: 2px solid #000;
+    padding: 2rem;
+    max-width: 600px;
+  }
+  
+  .form-row {
+    display: flex;
+    justify-content: space-between;
+    margin: 0.5rem 0;
+  }
+  
+  .form-row input {
+    width: 60%;
+  }
+  
+  .actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1.5rem;
+  }
+  
+  button {
+    padding: 0.5rem 1rem;
+  }
+  

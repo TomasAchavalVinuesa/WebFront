@@ -121,6 +121,8 @@ const Register = ({ onRegister }) => {
                 <button>Home</button>
             </Link>
           <button onClick={handleRegister}>Registrar</button>
+
+          
         </div>
       </div>
     </div>

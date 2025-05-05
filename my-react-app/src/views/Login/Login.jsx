@@ -1,57 +1,31 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
 import "./Login.css";
-import { Link } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
 
-
-
-const Login = ({ onLogin }) => {
-  const [loginForm, setLoginForm] = useState({
-    usuario: "",
-    password: ""
-  });
+export default function Login() {
+  const [loginForm, setLoginForm] = useState({ usuario: "", password: "" });
+  const { login } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const handleLoginChange = (e) => {
     setLoginForm({ ...loginForm, [e.target.name]: e.target.value });
   };
-  
-  const navigate = useNavigate();
 
   const handleLogin = async () => {
     const { usuario, password } = loginForm;
-  
+
     if (!usuario || !password) {
-      alert("Por favor, complete todos los campos.");
+      alert("Por favor, completa todos los campos.");
       return;
     }
 
-  
-    try {
-      const response = await fetch("http://localhost:5100/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          username: usuario,
-          password: password
-        })
-      });
-  
-      const data = await response.json();
-  
-      if (response.ok) {
-        alert(`Login exitoso. Token: ${data.token}`);
-        localStorage.setItem("token", data.token);
-        if (onLogin) onLogin(data);
-        navigate("/home");
-      } else {
-        alert(`Error al loguearse: ${data.message || "Error desconocido"}`);
-      }
-    } catch (error) {
-      console.error("Error al hacer la solicitud:", error);
-      alert("Ocurrió un error al conectarse con el servidor.");
-    }
+    // Simulamos login exitoso:
+    login({
+      name: usuario,
+      projects: 3 // o cualquier número simulado
+    });
+    navigate("/home");
   };
 
   return (
@@ -60,7 +34,6 @@ const Login = ({ onLogin }) => {
         <div className="login-header">
           <h2>Iniciar sesión</h2>
         </div>
-
         <div className="login-section">
           <h3>Ingresa a tu cuenta</h3>
 
@@ -71,6 +44,7 @@ const Login = ({ onLogin }) => {
               name="usuario"
               value={loginForm.usuario}
               onChange={handleLoginChange}
+              required
             />
           </div>
 
@@ -82,19 +56,23 @@ const Login = ({ onLogin }) => {
               type="password"
               value={loginForm.password}
               onChange={handleLoginChange}
+              required
             />
           </div>
+
+          <div className="actions">
             <Link to="/register">
-                <button>Registrarse</button>
+              <button type="button">Registrarse</button>
             </Link>
             <Link to="/home">
-                <button>Home</button>
+              <button type="button">Home</button>
             </Link>
-          <button onClick={handleLogin}>Iniciar sesión</button>
+            <button type="button" onClick={handleLogin}>
+              Iniciar sesión
+            </button>
+          </div>
         </div>
       </div>
     </div>
   );
-};
-
-export default Login;
+}

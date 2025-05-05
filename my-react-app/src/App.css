@@ -1,29 +1,34 @@
+/* Global reset para que html/body/#root y el layout ocupen 100% */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+html, body, #root {
+  height: 100%;
+  width: 100%;
+}
+
+/* Contenedor principal: sidebar + contenido */
 .app-layout {
-    display: flex;
-    min-height: 100vh;
-  }
-  
-  .main-content {
-    flex-grow: 1;
-    padding: 2rem;
-    width: 100%;
-  }
-  
-  .hamburger {
-    display: none;
-    position: absolute;
-    top: 1rem;
-    left: 1rem;
-    font-size: 2rem;
-    z-index: 1000;
-    background: none;
-    border: none;
-    cursor: pointer;
-  }
-  
-  @media (max-width: 768px) {
-    .hamburger {
-      display: block;
-    }
-  }
-  
+  display: flex;
+  height: 100%;          /* Ocupa todo el viewport */
+}
+
+/* Aquí se renderiza cada vista (Home, Login, etc) */
+.main-content {
+  flex: 1;               /* Rellena todo el espacio restante */
+  overflow: auto;        /* Scroll si el contenido supera la altura */
+}
+
+/* 🍔 Botón hamburguesa en mobile/desktop */
+.hamburger {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  font-size: 1.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 1000;
+}

@@ -1,84 +1,72 @@
-import React, { useEffect, useState } from "react";
+// src/views/Home/Home.jsx
+import React, { useContext, useState } from "react";
+import { AuthContext } from "../../context/AuthContext";
+import { Link } from "react-router-dom";
+import Sidebar from "../../components/Sidebar/Sidebar";
 import "./Home.css";
-import { useNavigate, Link } from "react-router-dom";
 
-const Home = ({ onLogin, onLogout }) => {
-  const [user, setUser] = useState(null);
-  const [projectsCount, setProjectsCount] = useState(0);
-  const navigate = useNavigate();
+export default function Home() {
+  const { user, logout } = useContext(AuthContext);
+  const [menuOpen, setMenuOpen] = useState(false);
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
-    fetch("http://localhost:5100/project/my-projects", {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error(`Error: ${res.status}`);
-        return res.json();
-      })
-      .then((data) => {
-        setProjectsCount(Array.isArray(data) ? data.length : 0);
-
-        // Si tu backend no retorna el usuario, podrías usar el token para obtenerlo.
-        // Simulación simple de usuario si no viene del backend:
-        setUser({ name: "Usuario" }); // Reemplazalo por info real si la tenés
-      })
-      .catch((err) => {
-        console.error("Fallo al obtener proyectos:", err);
-        setUser(null);
-      });
-  }, []);
-
-  const isLoggedIn = !!user;
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+    console.log("Menu abierto:", !menuOpen); // Debug
+  };
 
   return (
     <div className="home-container">
+      {user && (
+        <Sidebar
+          user={user}
+          onLogout={logout}
+          onLogin={() => {}}
+          isOpen={menuOpen}
+          toggleMenu={toggleMenu}
+        />
+      )}
+
       <div className="home-card">
         <div className="home-header">
-          <span role="img" aria-label="menu">🍔</span>
-          <h2>Home</h2>
-          {!isLoggedIn && (
-            <button
-              onClick={() => {
-                onLogin();
-                navigate("/home");
-              }}
-              className="login-btn"
-            >
-              Iniciar sesión
-            </button>
-          )}
+        {user ? (
+              <>
+                {!menuOpen && (
+                  <button onClick={toggleMenu} className="hamburger-btn">🍔</button>
+                )}
+                <h2>Home</h2>
+              </>
+            ) : (
+              <h2>Home</h2>
+            )}
         </div>
 
         <div className="home-body">
-          {isLoggedIn ? (
+          {user ? (
             <>
               <h1>Bienvenido {user.name}</h1>
-              <p>Tienes {projectsCount} proyectos pendientes</p>
+              <p>Tienes {user.projects || 0} proyectos pendientes</p>
               <img
-                src="/assets/images/Home.png"
+                src="src/assets/images/Home.png"
                 alt="trabajando"
                 className="home-img"
               />
-              <p>
-                Prepara tu próxima taza de café<br />y ¡Manos a la obra!
-              </p>
+              <p>Prepara tu próxima taza de café<br />y ¡Manos a la obra!</p>
             </>
           ) : (
             <>
-              <h1>Aún no has iniciado tu sesión</h1>
-              <span className="emoji">😟</span>
-              <p>¿Qué estás esperando para hacerlo?</p>
-              <Link to={"/login"}>
-                <button onClick={onLogin} className="login-btn">
-                  Iniciar sesión
-                </button>
+              <h1>Bienvenido al mejor gestor de proyectos</h1>
+              <img
+                src="src/assets/images/Logo.png"
+                alt="Logo"
+                className="home-logo"
+              />
+              <p>Para Iniciar tu experiencia puedes</p>
+              <Link to="/login">
+                <button className="primary-btn">Iniciar sesión</button>
+              </Link>
+              <p>o</p>
+              <Link to="/register">
+                <button className="primary-btn">Registrarte</button>
               </Link>
             </>
           )}
@@ -86,6 +74,4 @@ const Home = ({ onLogin, onLogout }) => {
       </div>
     </div>
   );
-};
-
-export default Home;
+}

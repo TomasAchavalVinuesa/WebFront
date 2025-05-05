@@ -1,11 +1,6 @@
+// src/views/Projects/MyProjects.jsx
 import { useEffect, useState } from "react";
-import ProjectCard from "../components/projects/ProjectCard";
-import ProjectForm from "../components/projects/ProjectForm";
-import ProjectLoader from "../components/projects/ProjectLoader";
-import ProjectEmpty from "../components/projects/ProjectEmpty";
-import ProjectConfirmDelete from "../components/projects/ProjectConfirmDelete";
-import ProjectMessage from "../components/projects/ProjectMessage";
-import "../styles/projects.css";
+import "./projects.css";
 
 export default function MyProjects() {
   const [loading, setLoading] = useState(true);
@@ -15,15 +10,28 @@ export default function MyProjects() {
   const [projectToDelete, setProjectToDelete] = useState(null);
   const [message, setMessage] = useState(null);
 
+  const [formData, setFormData] = useState({
+    name: "",
+    icon: "",
+    description: "",
+    members: ""
+  });
+
   useEffect(() => {
     setTimeout(() => {
-      // Simulación de carga de proyectos
-      setProjects([]); // Cambiar a una lista para testear
+      setProjects([]); // Simulación de carga desde API
       setLoading(false);
     }, 1500);
   }, []);
 
   const handleAddOrEdit = (project) => {
+    const { name, icon, description, members } = project;
+
+    if (!name || !icon || !description || !members) {
+      setMessage("No pueden haber campos vacíos");
+      return;
+    }
+
     if (editingProject) {
       setProjects((prev) =>
         prev.map((p) => (p.id === editingProject.id ? project : p))
@@ -31,8 +39,10 @@ export default function MyProjects() {
     } else {
       setProjects((prev) => [...prev, { ...project, id: Date.now() }]);
     }
+
     setShowForm(false);
     setEditingProject(null);
+    setFormData({ name: "", icon: "", description: "", members: "" });
   };
 
   const handleDelete = (id) => {
@@ -46,50 +56,122 @@ export default function MyProjects() {
       <h2>📂 My Projects</h2>
 
       {loading ? (
-        <ProjectLoader />
+        <div className="project-loader">
+          <h2>Cargando proyectos</h2>
+          <img
+            src="src/assets/images/RelojArena.png"
+            alt="Cargando..."
+            className="loader-image"
+          />
+          <p>Esto puede tomar un momento</p>
+        </div>
       ) : projects.length === 0 ? (
-        <ProjectEmpty onAdd={() => setShowForm(true)} />
+        <div className="empty-projects">
+          <p className="empty-message">No tienes proyectos pendientes</p>
+          <span role="img" aria-label="triste" className="empty-emoji">😟</span>
+          <button className="add-project-btn" onClick={() => {
+            setFormData({ name: "", icon: "", description: "", members: "" });
+            setEditingProject(null);
+            setShowForm(true);
+          }}>
+            Añadir Proyecto
+          </button>
+        </div>
       ) : (
         <>
           <div className="project-list">
             {projects.map((project) => (
-              <ProjectCard
-                key={project.id}
-                project={project}
-                onEdit={() => {
-                  setEditingProject(project);
-                  setShowForm(true);
-                }}
-                onDelete={() => setProjectToDelete(project)}
-              />
+              <div key={project.id} className="project-card">
+                <div className="project-header">
+                  <span className="project-icon">{project.icon}</span>
+                  <span className="project-name">{project.name}</span>
+                </div>
+                <div className="project-description">{project.description}</div>
+                <div className="project-members">👥 {project.members}</div>
+                <div className="project-actions">
+                  <button onClick={() => {
+                    setFormData({ ...project });
+                    setEditingProject(project);
+                    setShowForm(true);
+                  }}>Editar</button>
+                  <button onClick={() => setProjectToDelete(project)}>Eliminar</button>
+                </div>
+              </div>
             ))}
           </div>
-          <button className="add-btn" onClick={() => setShowForm(true)}>
+          <button className="add-btn" onClick={() => {
+            setFormData({ name: "", icon: "", description: "", members: "" });
+            setEditingProject(null);
+            setShowForm(true);
+          }}>
             Añadir Proyecto
           </button>
         </>
       )}
 
       {showForm && (
-        <ProjectForm
-          project={editingProject}
-          onCancel={() => {
-            setShowForm(false);
-            setEditingProject(null);
-          }}
-          onSave={handleAddOrEdit}
-        />
+        <div className="modal-backdrop">
+          <div className="modal">
+            <h3>{editingProject ? "Editar Proyecto" : "Nuevo Proyecto"}</h3>
+            <input
+              type="text"
+              placeholder="Nombre"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            />
+            <input
+              type="text"
+              placeholder="Icono"
+              value={formData.icon}
+              onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
+            />
+            <input
+              type="text"
+              placeholder="Descripción"
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+            />
+            <input
+              type="text"
+              placeholder="Miembros"
+              value={formData.members}
+              onChange={(e) => setFormData({ ...formData, members: e.target.value })}
+            />
+            <div className="modal-buttons">
+              <button onClick={() => {
+                setShowForm(false);
+                setEditingProject(null);
+              }}>Cancelar</button>
+              <button onClick={() => handleAddOrEdit({ ...formData, id: editingProject?.id })}>
+                {editingProject ? "Guardar" : "Añadir"}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {projectToDelete && (
-        <ProjectConfirmDelete
-          project={projectToDelete}
-          onCancel={() => setProjectToDelete(null)}
-          onConfirm={() => handleDelete(projectToDelete.id)}
-        />
+        <div className="modal-backdrop">
+          <div className="modal">
+            <h3>¿Estás seguro de eliminar este proyecto?</h3>
+            <div className="modal-buttons">
+              <button onClick={() => setProjectToDelete(null)}>Cancelar</button>
+              <button onClick={() => handleDelete(projectToDelete.id)}>Eliminar</button>
+            </div>
+          </div>
+        </div>
       )}
 
-      {message && <ProjectMessage text={message} onClose={() => setMessage(null)} />}
+      {message && (
+        <div className="modal-backdrop">
+          <div className="modal">
+            <p>{message}</p>
+            <div className="modal-buttons">
+              <button onClick={() => setMessage(null)}>Aceptar</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
