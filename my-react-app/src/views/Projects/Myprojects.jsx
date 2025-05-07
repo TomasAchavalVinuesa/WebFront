@@ -1,6 +1,7 @@
 // src/views/Projects/MyProjects.jsx
 import { useEffect, useState } from "react";
 import "./projects.css";
+import { useNavigate } from "react-router-dom";
 
 export default function MyProjects() {
   const [loading, setLoading] = useState(true);
@@ -9,6 +10,7 @@ export default function MyProjects() {
   const [editingProject, setEditingProject] = useState(null);
   const [projectToDelete, setProjectToDelete] = useState(null);
   const [message, setMessage] = useState(null);
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -19,7 +21,47 @@ export default function MyProjects() {
 
   useEffect(() => {
     setTimeout(() => {
-      setProjects([]); // Simulación de carga desde API
+      const fetchProyectos = async () => {
+        const token = localStorage.getItem("token");
+  
+        if (!token) {
+          navigate("/login");
+          return;
+        }
+  
+        try {
+          const response = await fetch("http://localhost:5100/project/my-projects", {
+            method: "GET",
+            headers: {
+              "Authorization": `Bearer ${token}`,
+              "Content-Type": "application/json"
+            }
+          });
+  
+          const data = await response.json();
+  
+          if (response.ok) {
+            // Transformamos cada proyecto para cambiar _id por id
+            const proyectosFormateados = data.map(p => ({
+              id: p._id,
+              name: p.name,
+              members: p.members,
+              description: p.description,
+              icon: p.icon
+            }));
+  
+            setProjects(proyectosFormateados);
+          } else {
+            alert(`Error al obtener proyectos: ${data.error || "Error desconocido"}`);
+          }
+  
+        } catch (error) {
+          console.error("Error al hacer la solicitud:", error);
+          alert("Ocurrió un error al conectarse con el servidor.");
+        }
+      };
+  
+      fetchProyectos();
       setLoading(false);
     }, 1500);
   }, []);

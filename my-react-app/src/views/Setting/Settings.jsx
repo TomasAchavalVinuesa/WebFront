@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import Modal from "../../components/Modal/Modal";
 import "./Settings.css";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+
 
 const Settings = () => {
   const [form, setForm] = useState({
@@ -15,6 +17,33 @@ const Settings = () => {
   const navigate = useNavigate();
   const [showConfirm, setShowConfirm] = useState(false);
   const [showError, setShowError] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+  
+    fetch("http://localhost:5100/user/profile", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Error al obtener el perfil");
+        return res.json();
+      })
+      .then((data) => {
+        setForm({
+          usuario: data.username || "",
+          email: data.email || "",
+          password: "",
+          nombre: data.name?.first || "",
+          apellido: data.name?.last || "",
+        });
+      })
+      .catch((err) => {
+        console.error("Error al precargar el perfil:", err);
+      });
+  }, []);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });

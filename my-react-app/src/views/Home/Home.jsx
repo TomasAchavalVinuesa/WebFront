@@ -35,7 +35,7 @@ export default function Home() {
       });
 
     // Obtener lista de proyectos
-    fetch('http://localhost:5100/project', { headers })
+    fetch('http://localhost:5100/project/my-projects', { headers })
       .then((res) => {
         if (!res.ok) throw new Error('Error en la solicitud de proyectos');
         return res.json();

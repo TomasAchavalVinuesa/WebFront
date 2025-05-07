@@ -3,6 +3,7 @@ import "./Register.css";
 import AccionesSesion from "../../components/AccionesSesion/AccionesSesion";
 import HeaderSimple from "../../components/HeaderSimple/HeaderSimple";
 import FormularioRegister from "../../components/FormularioRegister/FormularioRegister";
+import { useNavigate } from "react-router-dom";
 
 
 const Register = ({ onRegister }) => {
@@ -14,6 +15,7 @@ const Register = ({ onRegister }) => {
     apellido: ""
   });
 
+  const navigate = useNavigate();
   const handleRegisterChange = (e) => {
     setRegisterForm({ ...registerForm, [e.target.name]: e.target.value });
   };
@@ -45,9 +47,11 @@ const Register = ({ onRegister }) => {
   
       if (response.ok) {
         alert("Registro exitoso.");
-        if (onRegister) onRegister(data); // podrías usar esto para redirigir o guardar el token
+        if (onRegister) onRegister(data);
+          navigate("/login");
+        
       } else {
-        alert(`Error al registrar: ${data.message || "Error desconocido"}`);
+        alert(`Error al registrar: ${data.error || "Error desconocido"}`);
       }
     } catch (error) {
       console.error("Error al hacer la solicitud:", error);
