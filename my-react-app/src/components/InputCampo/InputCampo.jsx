@@ -1,10 +1,10 @@
-function inputCampo({ id, name, value, onChange}){
+function InputCampo({ id, name, value, onChange, tipo = "text"}){
     return(
-        <input id={id} name={name} value={value} onChange={onChange} required/>
+        <input id={id} type={tipo} name={name} value={value} onChange={onChange} required/>
     );
 }
 
-export default inputCampo;
+export default InputCampo;
 
 
 

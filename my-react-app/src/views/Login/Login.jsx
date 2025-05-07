@@ -44,7 +44,7 @@ const Login = ({ onLogin }) => {
       if (onLogin) onLogin(data);
       navigate("/home");
     } else {
-      alert(`Error al loguearse: ${data.message || "Error desconocido"}`);
+      alert(`Error al loguearse: ${data.error || "Error desconocido"}`);
     }
   } catch (error) {
     console.error("Error al hacer la solicitud:", error);
