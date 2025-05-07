@@ -27,6 +27,16 @@ const Register = ({ onRegister }) => {
       alert("Por favor, complete todos los campos.");
       return;
     }
+
+    if (!email.includes("@")) {
+      alert("Ingrese un correo electrónico válido.");
+      return;
+    }
+
+    if (password.length < 4) {
+      alert("La contraseña debe tener al menos 4 caracteres.");
+      return;
+    }
   
     try {
       const response = await fetch("http://localhost:5100/auth/register", {

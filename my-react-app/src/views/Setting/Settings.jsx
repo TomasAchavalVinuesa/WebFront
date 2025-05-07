@@ -20,7 +20,10 @@ const Settings = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!token) return;
+    if (!token) {
+      navigate("/login");
+      return;
+    }
   
     fetch("http://localhost:5100/user/profile", {
       headers: {
