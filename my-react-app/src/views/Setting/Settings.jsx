@@ -3,6 +3,7 @@ import Modal from "../../components/Modal/Modal";
 import "./Settings.css";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import HeaderLogueado from "../../components/HeaderLogueado/HeaderLogueado";
 
 
 const Settings = () => {
@@ -74,7 +75,7 @@ const Settings = () => {
   return (
     <div className="settings-container">
       <div className="settings-card">
-        <h2>🍔 Settings</h2>
+        <HeaderLogueado contenido="Settings"></HeaderLogueado>
         <h3>Configurar mi perfil</h3>
 
         {["usuario", "email", "password", "nombre", "apellido"].map((campo, i) => (

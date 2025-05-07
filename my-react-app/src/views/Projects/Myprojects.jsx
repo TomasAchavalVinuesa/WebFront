@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import "./projects.css";
 import { useNavigate } from "react-router-dom";
+import HeaderLogueado from "../../components/HeaderLogueado/HeaderLogueado";
 
 export default function MyProjects() {
   const [loading, setLoading] = useState(true);
@@ -92,7 +93,7 @@ export default function MyProjects() {
 
   return (
     <div className="my-projects-container">
-      <h2>📂 My Projects</h2>
+      <HeaderLogueado contenido="📂 My Projects"/>
 
       {loading ? (
         <div className="project-loader">

@@ -1,17 +1,13 @@
 // src/views/Home/Home.jsx
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import Sidebar from "../../components/Sidebar/Sidebar";
 import "./Home.css";
 import HeaderSimple from "../../components/HeaderSimple/HeaderSimple";
+import HeaderLogueado from "../../components/HeaderLogueado/HeaderLogueado";
 
 export default function Home() {
   const [user, setUser] = useState('');
-  const [menuOpen, setMenuOpen] = useState(false);
   const [cantProyectos, setCantProyectos] = useState(0);
-
-  const toggleMenu = () => setMenuOpen(!menuOpen);
-  
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -52,11 +48,7 @@ export default function Home() {
       <div className="home-card">
         <div className="home-header">
         {user ? (
-              <>
-                <button className="hamburger" onClick={toggleMenu}>☰</button>
-                <Sidebar isOpen={menuOpen} toggleMenu={toggleMenu}/>
-                <h2>Home</h2>
-              </>
+              <HeaderLogueado contenido="Home"></HeaderLogueado>
             ) : (
               <HeaderSimple contenido="Home"/>
             )}
