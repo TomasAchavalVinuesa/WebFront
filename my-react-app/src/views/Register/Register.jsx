@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import "./Register.css";
-import { Link } from 'react-router-dom';
+import AccionesSesion from "../../components/AccionesSesion/AccionesSesion";
+import HeaderSimple from "../../components/HeaderSimple/HeaderSimple";
+import FormularioRegister from "../../components/FormularioRegister/FormularioRegister";
 
 
 const Register = ({ onRegister }) => {
@@ -56,73 +58,10 @@ const Register = ({ onRegister }) => {
   return (
     <div className="login-container">
       <div className="login-card">
-        <div className="login-header">
-          <h2>Registrarse</h2>
-        </div>
-
+        <HeaderSimple contenido="Registrarse"/>
         <div className="login-section">
-          <h3>Crear una cuenta</h3>
-
-          <div className="form-row">
-            <label htmlFor="usuario">Usuario</label>
-            <input
-              id="usuario"
-              name="usuario"
-              value={registerForm.usuario}
-              onChange={handleRegisterChange}
-            />
-          </div>
-
-          <div className="form-row">
-            <label htmlFor="email">Email</label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              value={registerForm.email}
-              onChange={handleRegisterChange}
-            />
-          </div>
-
-          <div className="form-row">
-            <label htmlFor="password">Contraseña</label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              value={registerForm.password}
-              onChange={handleRegisterChange}
-            />
-          </div>
-
-          <div className="form-row">
-            <label htmlFor="nombre">Nombre</label>
-            <input
-              id="nombre"
-              name="nombre"
-              value={registerForm.nombre}
-              onChange={handleRegisterChange}
-            />
-          </div>
-
-          <div className="form-row">
-            <label htmlFor="apellido">Apellido</label>
-            <input
-              id="apellido"
-              name="apellido"
-              value={registerForm.apellido}
-              onChange={handleRegisterChange}
-            />
-          </div>
-            <Link to="/login">
-                <button>Ya tengo una cuenta</button>
-            </Link>
-            <Link to="/home">
-                <button>Home</button>
-            </Link>
-          <button onClick={handleRegister}>Registrar</button>
-
-          
+          <FormularioRegister usuario={registerForm.usuario} email={registerForm.email} password={registerForm.password} nombre={registerForm.nombre} apellido={registerForm.apellido} onChange={handleRegisterChange} />
+          <AccionesSesion dire1="/login" dire2="/home" clase="" onClick={handleRegister} contenido1="Ya tengo una cuenta" contenido2="Home" contenido3="Registrar"/>
         </div>
       </div>
     </div>

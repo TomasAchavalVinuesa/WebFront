@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Modal from "../../components/Modal/Modal";
 import "./Settings.css";
+import { useNavigate } from "react-router-dom";
 
 const Settings = () => {
   const [form, setForm] = useState({
@@ -11,12 +12,18 @@ const Settings = () => {
     apellido: "",
   });
 
+  const navigate = useNavigate();
   const [showConfirm, setShowConfirm] = useState(false);
   const [showError, setShowError] = useState(false);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
+
+  const handleLogout = () =>{
+    localStorage.removeItem("token");
+    navigate("/home");
+  }
 
   const handleGuardar = () => {
     if (Object.values(form).some(val => val.trim() === "")) {
@@ -52,7 +59,7 @@ const Settings = () => {
         ))}
 
         <div className="actions">
-          <button className="btn-logout">Cerrar sesión</button>
+          <button className="btn-logout" onClick={handleLogout}>Cerrar sesión</button>
           <button className="btn-save" onClick={handleGuardar}>Guardar</button>
         </div>
       </div>

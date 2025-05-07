@@ -1,50 +1,72 @@
 // src/views/Home/Home.jsx
-import React, { useContext, useState } from "react";
-import { AuthContext } from "../../context/AuthContext";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import "./Home.css";
+import HeaderSimple from "../../components/HeaderSimple/HeaderSimple";
 
 export default function Home() {
-  const { user, logout } = useContext(AuthContext);
+  const [user, setUser] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
+  const [cantProyectos, setCantProyectos] = useState(0);
 
-  const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
-    console.log("Menu abierto:", !menuOpen); // Debug
-  };
+  const toggleMenu = () => setMenuOpen(!menuOpen);
+  
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+
+    // Obtener perfil del usuario
+    fetch('http://localhost:5100/user/profile', { headers })
+      .then((res) => {
+        if (!res.ok) throw new Error('Error en la solicitud de perfil');
+        return res.json();
+      })
+      .then((data) => {
+        setUser(data.name.first);
+      })
+      .catch((err) => {
+        console.error('Error al obtener el perfil:', err);
+      });
+
+    // Obtener lista de proyectos
+    fetch('http://localhost:5100/project', { headers })
+      .then((res) => {
+        if (!res.ok) throw new Error('Error en la solicitud de proyectos');
+        return res.json();
+      })
+      .then((data) => {
+        setCantProyectos(data.length);
+      })
+      .catch((err) => {
+        console.error('Error al obtener los proyectos:', err);
+      });
+  }, []);
 
   return (
-    <div className="home-container">
-      {user && (
-        <Sidebar
-          user={user}
-          onLogout={logout}
-          onLogin={() => {}}
-          isOpen={menuOpen}
-          toggleMenu={toggleMenu}
-        />
-      )}
-
       <div className="home-card">
         <div className="home-header">
         {user ? (
               <>
-                {!menuOpen && (
-                  <button onClick={toggleMenu} className="hamburger-btn">🍔</button>
-                )}
+                <button className="hamburger" onClick={toggleMenu}>☰</button>
+                <Sidebar isOpen={menuOpen} toggleMenu={toggleMenu}/>
                 <h2>Home</h2>
               </>
             ) : (
-              <h2>Home</h2>
+              <HeaderSimple contenido="Home"/>
             )}
         </div>
 
         <div className="home-body">
           {user ? (
             <>
-              <h1>Bienvenido {user.name}</h1>
-              <p>Tienes {user.projects || 0} proyectos pendientes</p>
+              <h1>Bienvenido {user}</h1>
+              <p>Tienes {cantProyectos || 0} proyectos pendientes</p>
               <img
                 src="src/assets/images/Home.png"
                 alt="trabajando"
@@ -72,6 +94,5 @@ export default function Home() {
           )}
         </div>
       </div>
-    </div>
   );
 }

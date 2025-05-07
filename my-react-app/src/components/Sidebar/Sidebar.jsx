@@ -1,26 +1,16 @@
 // src/components/Sidebar/Sidebar.jsx
 import React from "react";
-import { Link } from "react-router-dom";
 import "./Sidebar.css";
+import LogoSideBar from "../LogoSideBar/LogoSideBar";
+import Boton from "../Boton/Boton";
+import NavSideBar from "../NavSideBar/NavSideBar";
 
 export default function Sidebar({ isOpen, toggleMenu }) {
   return (
     <div className={`sidebar ${isOpen ? "open" : ""}`}>
-      <button className="close-btn" onClick={toggleMenu}>✖</button>
-
-      <div className="sidebar-logo">
-        <img src="src/assets/images/Logo.png" alt="Logo" />
-      </div>
-
-      <nav className="sidebar-links">
-        <Link to="/home" onClick={toggleMenu}>Home</Link>
-        <Link to="/my-projects" onClick={toggleMenu}>My projects</Link>
-        <Link to="/my-stories" onClick={toggleMenu}>My Stories</Link>
-      </nav>
-
-      <div className="sidebar-bottom">
-        <Link to="/settings" onClick={toggleMenu}>Settings</Link>
-      </div>
+      <Boton clase="close-btn" onClick={toggleMenu} contenido="✖" />
+      <LogoSideBar src="src/assets/images/Logo.png" alt="Logo" clase="sidebar-logo"/>
+      <NavSideBar direccion1="/home" direccion2="/my-projects" direccion3="/my-stories" direccion4="/settings" contenido1="Home" contenido2="My projects" contenido3="My Stories" contenido4="Settings" onClick={toggleMenu}/>
     </div>
   );
 }
