@@ -39,7 +39,23 @@ const Register = ({ onRegister }) => {
     }
   
     try {
-      const response = await fetch("http://localhost:5100/auth/register", {
+
+      const emailRes = await fetch(`http://localhost:5100/auth/check-email?email=${encodeURIComponent(email)}`);
+      const emailData = await emailRes.json();
+      if (emailData.exists) {
+        alert("Este email ya está registrado.");
+        return;
+      }
+
+      // Validar username existente
+      const usernameRes = await fetch(`http://localhost:5100/auth/check-username?username=${encodeURIComponent(usuario)}`);
+      const usernameData = await usernameRes.json();
+      if (usernameData.exists) {
+        alert("Este nombre de usuario ya está en uso.");
+        return;
+      }
+      
+        const response = await fetch("http://localhost:5100/auth/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

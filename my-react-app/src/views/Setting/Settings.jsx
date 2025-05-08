@@ -14,6 +14,7 @@ const Settings = () => {
     nombre: "",
     apellido: "",
   });
+  const [originalForm, setOriginalForm] = useState(null); 
 
   const navigate = useNavigate();
   const [showConfirm, setShowConfirm] = useState(false);
@@ -36,13 +37,15 @@ const Settings = () => {
         return res.json();
       })
       .then((data) => {
-        setForm({
+        const newForm = {
           usuario: data.username || "",
           email: data.email || "",
           password: "",
           nombre: data.name?.first || "",
           apellido: data.name?.last || "",
-        });
+        };
+        setForm(newForm);
+        setOriginalForm(newForm); 
       })
       .catch((err) => {
         console.error("Error al precargar el perfil:", err);
@@ -66,10 +69,79 @@ const Settings = () => {
     setShowConfirm(true);
   };
 
-  const confirmarCambios = () => {
-    setShowConfirm(false);
-    alert("Cambios guardados correctamente");
-    // Acá podrías hacer el fetch PUT/POST
+  const confirmarCambios = async () => {
+    const token = localStorage.getItem("token");
+
+    try {
+      // Validar si el email ya existe
+      if (form.email !== originalForm.email) {
+        const emailRes = await fetch(`http://localhost:5100/auth/check-email?email=${encodeURIComponent(form.email)}`);
+        const emailData = await emailRes.json();
+        if (emailData.exists) {
+          alert("Este email ya está registrado.");
+          return;
+        }
+      }
+  
+      // Validar si el nombre de usuario ya existe
+      if (form.usuario !== originalForm.usuario) {
+        const usernameRes = await fetch(`http://localhost:5100/auth/check-username?username=${encodeURIComponent(form.usuario)}`);
+        const usernameData = await usernameRes.json();
+        if (usernameData.exists) {
+          alert("Este nombre de usuario ya está en uso.");
+          return;
+        }
+      }
+  
+      // Enviar los cambios del perfil al servidor
+      const updateRes = await fetch("http://localhost:5100/user/update", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          email: form.email,
+          username: form.usuario,
+          first: form.nombre,
+          last: form.apellido,
+          password: form.password,
+        }),
+      });
+  
+      if (!updateRes.ok) {
+        throw new Error("Error al guardar los cambios");
+      }
+  
+      setShowConfirm(false);
+      alert("Cambios guardados correctamente");
+  
+      // Reautenticar para obtener nuevo token
+      const loginRes = await fetch("http://localhost:5100/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          username: form.usuario,
+          password: form.password
+        })
+      });
+  
+      const loginData = await loginRes.json();
+  
+      if (loginRes.ok) {
+        localStorage.setItem("token", loginData.token);
+        navigate("/home"); // o redireccioná a donde necesites
+      } else {
+        alert(`Error al reautenticarse: ${loginData.error || "Error desconocido"}`);
+      }
+  
+    } catch (err) {
+      console.error("Error al guardar o reautenticarse:", err);
+      setShowConfirm(false);
+      alert("Hubo un error al guardar los cambios");
+    }
   };
 
   return (
