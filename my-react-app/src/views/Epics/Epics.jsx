@@ -1,17 +1,24 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom"; //Capaz luego eliminar
 import "./Epics.css";
+
 
 export default function Epics({ projectId }) {
   const [epics, setEpics] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({ name: "", description: "", icon: "" });
   const [editingEpic, setEditingEpic] = useState(null);
+  //const [EpicToDelete, setEpicToDelete] = useState(null);
+  //const [message, setMessage] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchEpics = async () => {
       const token = localStorage.getItem("token");
+      if (!token) return navigate("/login");
+
       try {
-        const res = await fetch(`http://localhost:5100/epic/${projectId}/stories`, {
+        const res = await fetch(`http://localhost:5100/project/${projectId}/epics`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         const data = await res.json();
@@ -77,7 +84,7 @@ export default function Epics({ projectId }) {
 
       <div className="epic-list">
         {epics.map((epic) => (
-          <div key={epic._id} className="epic-card">
+          <div key={epic._id} className="epic-card" onClick={() => navigate(`/epics/${epic.id}`)} style={{ cursor: "pointer" }}>
             <p><strong>{epic.icon} {epic.name}</strong></p>
             <p>{epic.description}</p>
             <div className="epic-actions">

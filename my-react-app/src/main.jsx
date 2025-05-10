@@ -10,8 +10,8 @@ import Home from './views/Home/Home.jsx';
 import Login from './views/Login/Login.jsx';
 import Register from './views/Register/Register.jsx';
 import Settings from './views/Setting/Settings.jsx';
-import MyProjects from './views/Projects/Myprojects.jsx';
-import ProjectDetail from './views/Projects/ProjectDetail.jsx';
+import MyProjects from './views/MyProjects/MyProjects.jsx';
+import ProjectDetail from './views/ProjectDetail/ProjectDetail.jsx';
 import MyStories from './views/MyStories/MyStories.jsx';
 
 const router = createBrowserRouter([

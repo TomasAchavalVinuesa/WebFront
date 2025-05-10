@@ -1,9 +1,9 @@
 // src/views/Projects/ProjectDetail.jsx
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import HeaderLogueado from "../../components/HeaderLogueado/HeaderLogueado";
 import Epics from "../Epics/Epics";
 import "./ProjectDetail.css";
+import HeaderVolver from "../../components/HeaderVolver/HeaderVolver";
 
 export default function ProjectDetail() {
   const { projectid } = useParams();
@@ -41,7 +41,7 @@ export default function ProjectDetail() {
 
   return (
     <div className="project-detail-container">
-      <HeaderLogueado contenido={`Proyect: ${project.name}`} />
+      <HeaderVolver contenido={`Proyect: ${project.name}`} />
 
       <div className="project-detail-card">
         <h2>Información del proyecto</h2>
@@ -53,8 +53,6 @@ export default function ProjectDetail() {
 
       {/* Épicas delegadas al componente Epics */}
       <Epics projectId={projectid} />
-
-      <button onClick={() => navigate(-1)}>Volver</button>
     </div>
   );
 }
