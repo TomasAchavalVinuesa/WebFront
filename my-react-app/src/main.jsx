@@ -11,6 +11,7 @@ import Login from './views/Login/Login.jsx';
 import Register from './views/Register/Register.jsx';
 import Settings from './views/Setting/Settings.jsx';
 import MyProjects from './views/Projects/Myprojects.jsx';
+import ProjectDetail from './views/Projects/ProjectDetail.jsx';
 import MyStories from './views/MyStories/MyStories.jsx';
 
 const router = createBrowserRouter([
@@ -20,7 +21,7 @@ const router = createBrowserRouter([
       { path: '/register', element: <Register /> },
       { path: '/my-projects', element: <MyProjects/> },
       { path: '/my-stories', element: <MyStories/> },
-      { path: '/projects/:projectid', element: <div>Esto me tendría que mostrar 1 proyecto específico</div> },
+      { path: '/projects/:projectid', element: <ProjectDetail /> },
       { path: '/epics/:epicid', element: <div>Esto me tendría que mostrar 1 épica específica</div> },
       { path: '/story/:storyid', element: <div>Esto me tendría que mostrar 1 story específica</div> },
       { path: '/settings', element: <Settings /> },

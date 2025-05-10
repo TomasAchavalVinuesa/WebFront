@@ -1,8 +1,8 @@
 // src/views/Projects/MyProjects.jsx
 import { useEffect, useState } from "react";
-import "./projects.css";
 import { useNavigate } from "react-router-dom";
 import HeaderLogueado from "../../components/HeaderLogueado/HeaderLogueado";
+import "./projects.css";
 
 export default function MyProjects() {
   const [loading, setLoading] = useState(true);
@@ -23,61 +23,46 @@ export default function MyProjects() {
   useEffect(() => {
     const fetchProyectos = async () => {
       const token = localStorage.getItem("token");
-  
-      if (!token) {
-        navigate("/login");
-        return;
-      }
-  
+      if (!token) return navigate("/login");
+
       try {
         const response = await fetch("http://localhost:5100/project/my-projects", {
-          method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         });
-  
+
         const data = await response.json();
-  
         if (response.ok) {
-          const proyectosFormateados = data.map((p) => ({
+          setProjects(data.map(p => ({
             id: p._id,
             name: p.name,
             members: p.members,
             description: p.description,
             icon: p.icon,
-          }));
-  
-          setProjects(proyectosFormateados);
+          })));
         } else {
-          alert(`Error al obtener proyectos: ${data.error || "Error desconocido"}`);
+          alert(data.error || "Error al obtener proyectos");
         }
       } catch (error) {
-        console.error("Error al hacer la solicitud:", error);
-        alert("Ocurrió un error al conectarse con el servidor.");
+        alert("Error al conectarse con el servidor");
       } finally {
         setLoading(false);
       }
     };
-  
+
     fetchProyectos();
   }, []);
 
   const handleAddOrEdit = (project) => {
     const { name, icon, description, members } = project;
-
-    if (!name || !icon || !description || !members) {
-      setMessage("No pueden haber campos vacíos");
-      return;
-    }
+    if (!name || !icon || !description || !members) return setMessage("No pueden haber campos vacíos");
 
     if (editingProject) {
-      setProjects((prev) =>
-        prev.map((p) => (p.id === editingProject.id ? project : p))
-      );
+      setProjects(prev => prev.map(p => (p.id === editingProject.id ? project : p)));
     } else {
-      setProjects((prev) => [...prev, { ...project, id: Date.now() }]);
+      setProjects(prev => [...prev, { ...project, id: Date.now() }]);
     }
 
     setShowForm(false);
@@ -86,29 +71,25 @@ export default function MyProjects() {
   };
 
   const handleDelete = (id) => {
-    setProjects((prev) => prev.filter((p) => p.id !== id));
+    setProjects(prev => prev.filter(p => p.id !== id));
     setProjectToDelete(null);
     setMessage("Proyecto eliminado exitosamente");
   };
 
   return (
     <div className="my-projects-container">
-      <HeaderLogueado contenido="📂 My Projects"/>
+      <HeaderLogueado contenido="📂 My Projects" />
 
       {loading ? (
         <div className="project-loader">
           <h2>Cargando proyectos</h2>
-          <img
-            src="src/assets/images/RelojArena.png"
-            alt="Cargando..."
-            className="loader-image"
-          />
+          <img src="src/assets/images/RelojArena.png" alt="Cargando..." className="loader-image" />
           <p>Esto puede tomar un momento</p>
         </div>
       ) : projects.length === 0 ? (
         <div className="empty-projects">
           <p className="empty-message">No tienes proyectos pendientes</p>
-          <span role="img" aria-label="triste" className="empty-emoji">😟</span>
+          <span className="empty-emoji">😟</span>
           <button className="add-project-btn" onClick={() => {
             setFormData({ name: "", icon: "", description: "", members: "" });
             setEditingProject(null);
@@ -121,7 +102,12 @@ export default function MyProjects() {
         <>
           <div className="project-list">
             {projects.map((project) => (
-              <div key={project.id} className="project-card">
+              <div
+                key={project.id}
+                className="project-card"
+                onClick={() => navigate(`/projects/${project.id}`)}
+                style={{ cursor: "pointer" }}
+              >
                 <div className="project-header">
                   <span className="project-icon">{project.icon}</span>
                   <span className="project-name">{project.name}</span>
@@ -129,12 +115,8 @@ export default function MyProjects() {
                 <div className="project-description">{project.description}</div>
                 <div className="project-members">👥 {project.members}</div>
                 <div className="project-actions">
-                  <button onClick={() => {
-                    setFormData({ ...project });
-                    setEditingProject(project);
-                    setShowForm(true);
-                  }}>Editar</button>
-                  <button onClick={() => setProjectToDelete(project)}>Eliminar</button>
+                  <button onClick={(e) => { e.stopPropagation(); setFormData({ ...project }); setEditingProject(project); setShowForm(true); }}>Editar</button>
+                  <button onClick={(e) => { e.stopPropagation(); setProjectToDelete(project); }}>Eliminar</button>
                 </div>
               </div>
             ))}
@@ -149,42 +131,18 @@ export default function MyProjects() {
         </>
       )}
 
+      {/* Modal de formulario */}
       {showForm && (
         <div className="modal-backdrop">
           <div className="modal">
             <h3>{editingProject ? "Editar Proyecto" : "Nuevo Proyecto"}</h3>
-            <input
-              type="text"
-              placeholder="Nombre"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            />
-            <input
-              type="text"
-              placeholder="Icono"
-              value={formData.icon}
-              onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
-            />
-            <input
-              type="text"
-              placeholder="Descripción"
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-            />
-            <input
-              type="text"
-              placeholder="Miembros"
-              value={formData.members}
-              onChange={(e) => setFormData({ ...formData, members: e.target.value })}
-            />
+            <input type="text" placeholder="Nombre" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
+            <input type="text" placeholder="Icono" value={formData.icon} onChange={(e) => setFormData({ ...formData, icon: e.target.value })} />
+            <input type="text" placeholder="Descripción" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} />
+            <input type="text" placeholder="Miembros" value={formData.members} onChange={(e) => setFormData({ ...formData, members: e.target.value })} />
             <div className="modal-buttons">
-              <button onClick={() => {
-                setShowForm(false);
-                setEditingProject(null);
-              }}>Cancelar</button>
-              <button onClick={() => handleAddOrEdit({ ...formData, id: editingProject?.id })}>
-                {editingProject ? "Guardar" : "Añadir"}
-              </button>
+              <button onClick={() => { setShowForm(false); setEditingProject(null); }}>Cancelar</button>
+              <button onClick={() => handleAddOrEdit({ ...formData, id: editingProject?.id })}>{editingProject ? "Guardar" : "Añadir"}</button>
             </div>
           </div>
         </div>
