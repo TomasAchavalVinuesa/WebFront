@@ -13,6 +13,8 @@ import Settings from './views/Setting/Settings.jsx';
 import MyProjects from './views/MyProjects/MyProjects.jsx';
 import ProjectDetail from './views/ProjectDetail/ProjectDetail.jsx';
 import MyStories from './views/MyStories/MyStories.jsx';
+import EpicDetail from './views/EpicDetail/EpicDetail.jsx';
+
 
 const router = createBrowserRouter([
       { path: '/', element: <Home /> },
@@ -22,7 +24,7 @@ const router = createBrowserRouter([
       { path: '/my-projects', element: <MyProjects/> },
       { path: '/my-stories', element: <MyStories/> },
       { path: '/projects/:projectid', element: <ProjectDetail /> },
-      { path: '/epics/:epicid', element: <div>Esto me tendría que mostrar 1 épica específica</div> },
+      { path: '/epics/:epicid', element: <EpicDetail /> },
       { path: '/story/:storyid', element: <div>Esto me tendría que mostrar 1 story específica</div> },
       { path: '/settings', element: <Settings /> },
 ]);
