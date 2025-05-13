@@ -19,15 +19,10 @@ export default function MyProjects() {
     description: "",
     members: [],
   });
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const fetchProyectos = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        navigate("/login");
-        return;
-      }
-
       try {
         const response = await fetch("http://localhost:5100/project/my-projects", {
           method: "GET",
@@ -66,7 +61,6 @@ export default function MyProjects() {
 
     const fetchUsuarios = async () => {
       try {
-        const token = localStorage.getItem("token");
         const response = await fetch("http://localhost:5100/user", {
           headers: {
             Authorization: `Bearer ${token}`
@@ -86,7 +80,7 @@ export default function MyProjects() {
     fetchUsuarios();
   }, []);
 
-  const fetchUserNames = async (ids, token = localStorage.getItem("token")) => {
+  const fetchUserNames = async (ids, token) => {
     const nombres = await Promise.all(
       ids.map(async (id) => {
         try {
@@ -110,11 +104,6 @@ export default function MyProjects() {
   };
 
   const updateProject = async (project) => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setMessage("No estás autenticado.");
-      return;
-    }
 
     try {
       const response = await fetch(`http://localhost:5100/project/${project.id}`, {
@@ -150,7 +139,6 @@ export default function MyProjects() {
       setMessage("No pueden haber campos vacíos");
       return;
     }
-    const token = localStorage.getItem("token");
     const memberNames = await fetchUserNames(members, token);
 
     const formattedProject = {

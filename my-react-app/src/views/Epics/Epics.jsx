@@ -84,7 +84,7 @@ export default function Epics({ projectId }) {
 
       <div className="epic-list">
         {epics.map((epic) => (
-          <div key={epic._id} className="epic-card" onClick={() => navigate(`/epics/${epic.id}`)} style={{ cursor: "pointer" }}>
+          <div key={epic._id} className="epic-card" onClick={() => navigate(`/epics/${epic._id}`)} style={{ cursor: "pointer" }}>
             <p><strong>{epic.icon} {epic.name}</strong></p>
             <p>{epic.description}</p>
             <div className="epic-actions">

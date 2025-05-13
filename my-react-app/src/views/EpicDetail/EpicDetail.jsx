@@ -20,7 +20,11 @@ export default function EpicDetail() {
 
       try {
         const res = await fetch(`http://localhost:5100/epic/${epicid}`, {
-          headers: { Authorization: `Bearer ${token}` },
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         });
         const data = await res.json();
 
