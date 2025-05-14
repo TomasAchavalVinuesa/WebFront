@@ -45,46 +45,48 @@ export default function Home() {
   }, []);
 
   return (
-      <div className="home-card">
-        <div className="home-header">
+  <div className="home-container"> {/* <== esta línea faltaba */}
+    <div className="home-card">
+      <div className="home-header">
         {user ? (
-              <HeaderLogueado contenido="Home"></HeaderLogueado>
-            ) : (
-              <HeaderSimple contenido="Home"/>
-            )}
-        </div>
-
-        <div className="home-body">
-          {user ? (
-            <>
-              <h1>Bienvenido {user}</h1>
-              <p>Tienes {cantProyectos || 0} proyectos pendientes</p>
-              <img
-                src="src/assets/images/Home.png"
-                alt="trabajando"
-                className="home-img"
-              />
-              <p>Prepara tu próxima taza de café<br />y ¡Manos a la obra!</p>
-            </>
-          ) : (
-            <>
-              <h1>Bienvenido al mejor gestor de proyectos</h1>
-              <img
-                src="src/assets/images/Logo.png"
-                alt="Logo"
-                className="home-logo"
-              />
-              <p>Para Iniciar tu experiencia puedes</p>
-              <Link to="/login">
-                <button className="primary-btn">Iniciar sesión</button>
-              </Link>
-              <p>o</p>
-              <Link to="/register">
-                <button className="primary-btn">Registrarte</button>
-              </Link>
-            </>
-          )}
-        </div>
+          <HeaderLogueado contenido="Home" />
+        ) : (
+          <HeaderSimple contenido="Home" />
+        )}
       </div>
+
+      <div className="home-body">
+        {user ? (
+          <>
+            <h1>Bienvenido {user}</h1>
+            <p>Tienes {cantProyectos || 0} proyectos pendientes</p>
+            <img
+              src="src/assets/images/Home.png"
+              alt="trabajando"
+              className="home-img"
+            />
+            <p>Prepara tu próxima taza de café<br />y ¡Manos a la obra!</p>
+          </>
+        ) : (
+          <>
+            <h1>Bienvenido al mejor gestor de proyectos</h1>
+            <img
+              src="src/assets/images/Logo.png"
+              alt="Logo"
+              className="home-logo"
+            />
+            <p>Para Iniciar tu experiencia puedes</p>
+            <Link to="/login">
+              <button className="primary-btn">Iniciar sesión</button>
+            </Link>
+            <p>o</p>
+            <Link to="/register">
+              <button className="primary-btn">Registrarte</button>
+            </Link>
+          </>
+        )}
+      </div>
+    </div>
+  </div>
   );
 }
