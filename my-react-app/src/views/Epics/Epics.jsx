@@ -13,10 +13,13 @@ export default function Epics({ projectId }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchEpics = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) return navigate("/login");
+    const token = localStorage.getItem("token");
+    if (!token){
+      navigate("/login");
+      return
+    }  
 
+    const fetchEpics = async () => {
       try {
         const res = await fetch(`http://localhost:5100/project/${projectId}/epics`, {
           headers: { Authorization: `Bearer ${token}` }

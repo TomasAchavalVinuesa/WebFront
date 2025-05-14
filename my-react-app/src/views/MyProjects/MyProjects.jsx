@@ -19,72 +19,79 @@ export default function MyProjects() {
     description: "",
     members: [],
   });
-  const token = localStorage.getItem("token");
 
   useEffect(() => {
-    const fetchProyectos = async () => {
-      try {
-        const response = await fetch("http://localhost:5100/project/my-projects", {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-
-        const data = await response.json();
-
-          if (response.ok) {
-          const proyectosFormateados = await Promise.all(
-            data.map(async (p) => {
-              const memberNames = await fetchUserNames(p.members, token);
-              return {
-                id: p._id,
-                name: p.name,
-                description: p.description,
-                icon: p.icon,
-                members: p.members,
-                memberNames: memberNames.join(", "),
-              };
-            })
-          );
-          setProjects(proyectosFormateados);
-        } else {
-          alert(`Error al obtener proyectos: ${data.error || "Error desconocido"}`);
-        }
-      } catch (error) {
-        alert("Error al conectarse con el servidor: ", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    const fetchUsuarios = async () => {
-      try {
-        const response = await fetch("http://localhost:5100/user", {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
-
-        if (!response.ok) throw new Error("Error al obtener usuarios");
-
-        const users = await response.json();
-        setAllUsers(users);
-      }catch (error) {
-        console.error("Error al cargar usuarios:", error);
-      }
-    };
-
     fetchProyectos();
     fetchUsuarios();
   }, []);
+
+  const fetchProyectos = async () => {
+    const token = localStorage.getItem("token");
+      if (!token){
+        navigate("/login");
+        return
+    }  
+    try {
+      const response = await fetch("http://localhost:5100/project/my-projects", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await response.json();
+      if (response.ok) {
+        const proyectosFormateados = await Promise.all(
+          data.map(async (p) => {
+            const memberNames = await fetchUserNames(p.members, token);
+            return {
+              id: p._id,
+              name: p.name,
+              description: p.description,
+              icon: p.icon,
+              members: p.members,
+              memberNames: memberNames.join(", "),
+            };
+          })
+        );
+        setProjects(proyectosFormateados);
+      } else {
+        alert(`Error al obtener proyectos: ${data.error || "Error desconocido"}`);
+      }
+    } catch (error) {
+      alert("Error al conectarse con el servidor: ", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchUsuarios = async () => {
+    const token = localStorage.getItem("token");
+      if (!token){
+        navigate("/login");
+        return
+    }  
+    try {
+      const response = await fetch("http://localhost:5100/user", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      if (!response.ok) throw new Error("Error al obtener usuarios");
+      const users = await response.json();
+      setAllUsers(users);
+    }catch (error) {
+      console.error("Error al cargar usuarios:", error);
+    }
+  };
 
   const fetchUserNames = async (ids, token) => {
     const nombres = await Promise.all(
       ids.map(async (id) => {
         try {
           const res = await fetch(`http://localhost:5100/user/${id}`, {
+            method: "GET",
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -104,7 +111,11 @@ export default function MyProjects() {
   };
 
   const updateProject = async (project) => {
-
+    const token = localStorage.getItem("token");
+    if (!token){
+      navigate("/login");
+      return
+    }  
     try {
       const response = await fetch(`http://localhost:5100/project/${project.id}`, {
         method: "PUT",
@@ -123,7 +134,7 @@ export default function MyProjects() {
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error || "Error desconocido al actualizar el proyecto");
+        throw new Error(result.error || `Error desconocido al actualizar el proyecto y el id es ${project.id}`);
       }
 
       setMessage("Proyecto actualizado exitosamente.");
@@ -133,7 +144,46 @@ export default function MyProjects() {
     }
   };
 
+  const addProject = async (project) => {
+    const token = localStorage.getItem("token");
+    if (!token){
+      navigate("/login");
+      return
+    }  
+    try {
+      const response = await fetch(`http://localhost:5100/project`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          name: project.name,
+          icon: project.icon,
+          description: project.description,
+          members: project.members
+        })
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Error desconocido al añadir el proyecto");
+      }
+
+      setMessage("Proyecto añadido exitosamente.");
+    } catch (error) {
+      setMessage(`Error al añadir el proyecto: ${error.message}`);
+      console.error("Error al hacer POST:", error);
+    }
+  };
+
   const handleAddOrEdit = async(project) => {
+    const token = localStorage.getItem("token");
+    if (!token){
+      navigate("/login");
+      return
+    }  
     const { name, icon, description, members } = project;
     if (!name || !icon || !description || members.length === 0){
       setMessage("No pueden haber campos vacíos");
@@ -149,28 +199,50 @@ export default function MyProjects() {
 
     if (editingProject) {
       await updateProject(formattedProject); // nueva línea
+      await fetchProyectos();
       setProjects((prev) =>
         prev.map((p) => (p.id === editingProject.id ? formattedProject : p))
       );
     } else {
+      await addProject(formattedProject);
+      await fetchProyectos();
       setProjects((prev) => [...prev, formattedProject]);
     }
-
+    
     setShowForm(false);
     setEditingProject(null);
     setFormData({ name: "", icon: "", description: "", members: [] });
   };
 
-  const handleDelete = (id) => {
-    setProjects(prev => prev.filter(p => p.id !== id));
-    setProjectToDelete(null);
-    setMessage("Proyecto eliminado exitosamente");
+  const handleDelete = async (id) => {
+    const token = localStorage.getItem("token");
+    if (!token){
+      navigate("/login");
+      return
+    }  
+    try {
+      const response = await fetch(`http://localhost:5100/project/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.error || "Error desconocido al eliminar el proyecto");
+      }
+      setMessage("Proyecto Eliminado exitosamente.");
+      setProjectToDelete(null);
+      fetchProyectos();
+    } catch (error) {
+      setMessage(`Error al Eliminar: ${error.message}`);
+      console.error("Error al hacer DELETE:", error);
+    }
   };
 
   return (
     <div className="my-projects-container">
       <HeaderLogueado contenido="📂 My Projects" />
-
       {loading ? (
         <div className="project-loader">
           <h2>Cargando proyectos</h2>
