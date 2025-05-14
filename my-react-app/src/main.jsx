@@ -14,7 +14,7 @@ import MyProjects from './views/MyProjects/MyProjects.jsx';
 import ProjectDetail from './views/ProjectDetail/ProjectDetail.jsx';
 import MyStories from './views/MyStories/MyStories.jsx';
 import EpicDetail from './views/EpicDetail/EpicDetail.jsx';
-
+import StoryDetail from './views/StoryDetail/StoryDetail.jsx';
 
 const router = createBrowserRouter([
       { path: '/', element: <Home /> },
@@ -25,7 +25,7 @@ const router = createBrowserRouter([
       { path: '/my-stories', element: <MyStories/> },
       { path: '/projects/:projectid', element: <ProjectDetail /> },
       { path: '/epics/:epicid', element: <EpicDetail /> },
-      { path: '/story/:storyid', element: <div>Esto me tendría que mostrar 1 story específica</div> },
+      { path: '/story/:storyid', element: <StoryDetail /> },
       { path: '/settings', element: <Settings /> },
 ]);
 
