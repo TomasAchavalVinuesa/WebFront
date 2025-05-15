@@ -1,9 +1,9 @@
-// src/views/Projects/ProjectDetail.jsx
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Epics from "../Epics/Epics";
 import "./ProjectDetail.css";
 import HeaderVolver from "../../components/HeaderVolver/HeaderVolver";
+import Loading from "../Loading/Loading";
 
 export default function ProjectDetail() {
   const { projectid } = useParams();
@@ -12,50 +12,94 @@ export default function ProjectDetail() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchProject = async () => {
-      const token = localStorage.getItem("token");
-      if (!token){
-        navigate("/login");
-        return
-      }
-
-      try {
-        const res = await fetch(`http://localhost:5100/project/${projectid}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const data = await res.json();
-        if (res.ok) {
-          setProject(data);
-        } else {
-          alert(data.error || "No se pudo cargar el proyecto");
-        }
-      } catch (err) {
-        alert("Error de red");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchProject();
   }, [projectid]);
 
-  if (loading) return <p>Cargando...</p>;
-  if (!project) return <p>Proyecto no encontrado</p>;
+  const fetchProject = async () => {
+    const token = localStorage.getItem("token");
+    if (!token){
+      navigate("/login");
+      return
+    }
+    try {
+      const res = await fetch(`http://localhost:5100/project/${projectid}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (await handleUnauthorized(res)) return;
+      const data = await res.json();
+      if (res.ok) {
+        const memberNames = await fetchUserNames(data.members, token);
+        const proyectoFormateado = {
+          id: data._id,
+          name: data.name,
+          description: data.description,
+          icon: data.icon,
+          members: data.members,
+          memberNames: memberNames.join(", "),
+        };
+        setProject(proyectoFormateado);
+      } else {
+        alert(data.error || "No se pudo cargar el proyecto");
+      }
+    } catch (err) {
+      alert("Error de red");
+    }finally{
+      setLoading(false);
+    }
+  };
+
+  const fetchUserNames = async (ids, token) => {
+    const nombres = await Promise.all(
+      ids.map(async (id) => {
+        try {
+          const res = await fetch(`http://localhost:5100/user/${id}`, {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          if (await handleUnauthorized(res)) return;
+          if (res.ok) {
+            const data = await res.json();
+            return `${data.name.first} ${data.name.last}`;
+          } else {
+            return "Usuario desconocido";
+          }
+        } catch {
+          return "Error al obtener usuario";
+        }
+      })
+    );
+    //acá retorna los nombres mapeados como un array de Strings
+    return nombres;
+  };
+  const handleUnauthorized = async (response) => {
+    if (response.status === 401) {
+      localStorage.removeItem("token");
+      navigate("/login");
+      return true;
+    }
+    return false;
+  };
 
   return (
-    <div className="project-detail-container">
-      <HeaderVolver contenido={`Proyect: ${project.name}`} />
+    <>
+      {loading? (
+        <Loading contenido="Proyecto"/>
+      ): (
+        <div className="project-detail-container">
+          <HeaderVolver contenido={`Proyect: ${project.name}`} />
 
-      <div className="project-detail-card">
-        <h2>Información del proyecto</h2>
-        <p><strong>Nombre:</strong> {project.name}</p>
-        <p><strong>Descripción:</strong> {project.description}</p>
-        <p><strong>Miembros:</strong> {project.members}</p>
-        <p><strong>Icono:</strong> {project.icon}</p>
-      </div>
-
-      {/* Épicas delegadas al componente Epics */}
-      <Epics projectId={projectid} />
-    </div>
+          <div className="project-detail-card">
+          <h2>Información del proyecto</h2>
+          <p><strong>Nombre:</strong> {project.name}</p>
+          <p><strong>Descripción:</strong> {project.description}</p>
+          <p><strong>Miembros:</strong> {project.memberNames}</p>
+          <p><strong>Icono:</strong> {project.icon}</p>
+        </div>
+        <Epics projectId={projectid} />
+        </div>
+      )}
+    </>
   );
 }
