@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom"; //Capaz luego eliminar
 import Boton from "../../components/Boton/Boton";
 import "./Stories.css";
+import StoryCard from "../../components/StoryCard/StoryCard.jsx"
 
 
 export default function Stories({ epicId }) {
-  const [loading, setLoading] = useState(true);
   const [story, setStory] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({ //corregir
@@ -13,7 +13,7 @@ export default function Stories({ epicId }) {
     status: "todo",
     name: "",
     description: "",
-    owner: "231", //owner falso para probar rápido antes de rendir
+    owner: "",
     members: [],
   });
   const [editingStory, setEditingStory] = useState(null);
@@ -25,7 +25,7 @@ export default function Stories({ epicId }) {
   useEffect(() => {
     fetchStory();
     fetchUsuarios();
-  }, []);
+  }, [epicId]);
 
   const fetchStory = async () => {
     const token = localStorage.getItem("token");
@@ -46,15 +46,15 @@ export default function Stories({ epicId }) {
         if (res.ok) {
           const storiesFormateadas = await Promise.all(
             data.map(async (s) => {
-              const memberNames = await fetchUserNames(s.members, token);
+              const memberNames = await fetchUserNames(s.assignedTo, token);
               return {
                 id: s._id,
                 name: s.name,
                 description: s.description,
+                owner: s.owner,
                 points: s.points,
                 status: s.status,
-                owner: s.owner,
-                members: s.members,
+                members: s.assignedTo,
                 memberNames: memberNames.join(", "),
               };
             })
@@ -64,9 +64,7 @@ export default function Stories({ epicId }) {
           alert(`Error al obtener las stories: ${data.error || "Error desconocido"}`);
         }
       } catch (error) {
-        alert("Error al conectarse con el servidor: " + error.message);
-      } finally {
-        setLoading(false);
+        alert("Error al conectarse con el servidor (I): " + error.message);
       }
   };
 
@@ -370,7 +368,6 @@ export default function Stories({ epicId }) {
               }}/> 
             ))}
       </div>
-      <Boton clase="add-epic-btn" onClick={handleAddStoryClick} contenido="Añadir Story"/>
 
       {storyToDelete && (
         <div className="modal-backdrop">
