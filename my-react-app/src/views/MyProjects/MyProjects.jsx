@@ -16,7 +16,6 @@ export default function MyProjects() {
   const [message, setMessage] = useState(null);
   const [allUsers, setAllUsers] = useState([]);
   const navigate = useNavigate();
-
   const [formData, setFormData] = useState({
     name: "",
     icon: "",
@@ -219,8 +218,21 @@ export default function MyProjects() {
     if (!token){
       navigate("/login");
       return
-    }  
+    }
     try {
+      const res = await fetch(`http://localhost:5100/project/${id}/epics`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      if (!res.ok) {
+        console.log(`el id del proyecto es: ${id}` )
+        throw new Error("Error en la Comprobación de Epicas pendientes dentro del proyecto a eliminar");
+      }
+      const epics = await res.json();
+      if (epics.length !== 0) {
+        setMessage("No puedes eliminar un proyecto que tiene Épicas pendientes");
+        setProjectToDelete(null)
+        return;
+      }
       const response = await fetch(`http://localhost:5100/project/${id}`, {
         method: "DELETE",
         headers: {
@@ -232,10 +244,11 @@ export default function MyProjects() {
         throw new Error(result.error || "Error desconocido al eliminar el proyecto");
       }
       setMessage("Proyecto Eliminado exitosamente.");
-      setProjectToDelete(null);
+      setProjectToDelete(null)
       fetchProyectos();
     } catch (error) {
       setMessage(`Error al Eliminar: ${error.message}`);
+      setProjectToDelete(null)
       console.error("Error al hacer DELETE:", error);
     }
   };

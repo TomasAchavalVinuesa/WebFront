@@ -1,4 +1,7 @@
 import "./ContenidoVacio.css"
+import Parrafo from "../../components/Parrafo/Parrafo";
+import Span from "../../components/Span/Span";
+import Boton from "../../components/Boton/Boton";
 
 function ContenidoVacio({ onClick, contenidoB, contenidoP }){
     return(
