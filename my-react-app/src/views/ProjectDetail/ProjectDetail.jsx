@@ -1,5 +1,5 @@
 // src/views/Projects/ProjectDetail.jsx
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Epics from "../Epics/Epics";
 import "./ProjectDetail.css";

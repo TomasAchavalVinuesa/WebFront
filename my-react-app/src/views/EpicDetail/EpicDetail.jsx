@@ -4,6 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import Epics from "../Epics/Epics";
 import "./EpicDetail.css";
 import HeaderVolver from "../../components/HeaderVolver/HeaderVolver";
+import Stories from "../Stories/Stories";
 
 export default function EpicDetail() {
   const { epicid } = useParams();
@@ -57,12 +58,8 @@ export default function EpicDetail() {
         <p><strong>Icono:</strong> {epic.icon}</p>
       </div>
 
-      {/* Muestra otras épicas del mismo proyecto si es necesario */}
-      {epic.project && (
-        <Epics projectId={epic.project} />
-      )}
+      <Stories epicId={epic._id} />
 
-      <button onClick={() => navigate(-1)}>Volver</button>
     </div>
   );
 }
