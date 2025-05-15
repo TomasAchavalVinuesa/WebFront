@@ -1,6 +1,6 @@
-function Imagen({ src, alt }){
+function Imagen({ src, alt, clase="" }){
     return(
-        <img src={src} alt={alt} />
+        <img src={src} alt={alt} className={clase}/>
     );
 }
 

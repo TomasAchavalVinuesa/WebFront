@@ -14,7 +14,10 @@ export default function ProjectDetail() {
   useEffect(() => {
     const fetchProject = async () => {
       const token = localStorage.getItem("token");
-      if (!token) return navigate("/login");
+      if (!token){
+        navigate("/login");
+        return
+      }
 
       try {
         const res = await fetch(`http://localhost:5100/project/${projectid}`, {

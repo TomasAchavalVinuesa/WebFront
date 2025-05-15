@@ -1,6 +1,6 @@
-function Parrafo({ contenido }){
+function Parrafo({ contenido, clase="" }){
     return(
-        <p>{contenido}</p>
+        <p className={clase}>{contenido}</p>
     );
 }
 

@@ -5,6 +5,7 @@ import "./Home.css";
 import HeaderSimple from "../../components/HeaderSimple/HeaderSimple";
 import HeaderLogueado from "../../components/HeaderLogueado/HeaderLogueado";
 
+
 export default function Home() {
   const [user, setUser] = useState('');
   const [cantProyectos, setCantProyectos] = useState(0);

@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import HeaderLogueado from "../../components/HeaderLogueado/HeaderLogueado";
+import Loading from "../Loading/Loading";
 import "./MyProjects.css";
+import Boton from "../../components/Boton/Boton";
+import ContenidoVacio from "../ContenidoVacio/ContenidoVacio";
+import ProjectCard from "../../components/ProjectCard/ProjectCard";
 
 export default function MyProjects() {
   const [loading, setLoading] = useState(true);
@@ -27,9 +31,9 @@ export default function MyProjects() {
 
   const fetchProyectos = async () => {
     const token = localStorage.getItem("token");
-      if (!token){
-        navigate("/login");
-        return
+    if (!token){
+      navigate("/login");
+      return
     }  
     try {
       const response = await fetch("http://localhost:5100/project/my-projects", {
@@ -70,7 +74,7 @@ export default function MyProjects() {
       if (!token){
         navigate("/login");
         return
-    }  
+      }  
     try {
       const response = await fetch("http://localhost:5100/user", {
         method: "GET",
@@ -200,13 +204,9 @@ export default function MyProjects() {
     if (editingProject) {
       await updateProject(formattedProject); // nueva línea
       await fetchProyectos();
-      setProjects((prev) =>
-        prev.map((p) => (p.id === editingProject.id ? formattedProject : p))
-      );
     } else {
       await addProject(formattedProject);
       await fetchProyectos();
-      setProjects((prev) => [...prev, formattedProject]);
     }
     
     setShowForm(false);
@@ -239,54 +239,41 @@ export default function MyProjects() {
       console.error("Error al hacer DELETE:", error);
     }
   };
+  
+  function handleAddProjectClick() {
+    setFormData({ name: "", icon: "", description: "", members: [] });
+    setEditingProject(null);
+    setShowForm(true);
+  }
+
+  
 
   return (
     <div className="my-projects-container">
       <HeaderLogueado contenido="📂 My Projects" />
       {loading ? (
-        <div className="project-loader">
-          <h2>Cargando proyectos</h2>
-          <img src="src/assets/images/RelojArena.png" alt="Cargando..." className="loader-image" />
-          <p>Esto puede tomar un momento</p>
-        </div>
+        <Loading contenido="Proyectos"/>
       ) : projects.length === 0 ? (
-        <div className="empty-projects">
-          <p className="empty-message">No tienes proyectos pendientes</p>
-          <span className="empty-emoji">😟</span>
-          <button className="add-project-btn" onClick={() => {
-            setFormData({ name: "", icon: "", description: "", members: [] });
-            setEditingProject(null);
-            setShowForm(true);
-          }}>
-            Añadir Proyecto
-          </button>
-        </div>
+        <ContenidoVacio onClick={handleAddProjectClick} contenidoB="Añadir Proyecto" contenidoP="proyectos" />
       ) : (
         <>
           <div className="project-list">
             {projects.map((project) => (
-              <div
-                key={project.id} className="project-card" onClick={() => navigate(`/projects/${project.id}`)} style={{ cursor: "pointer" }}>
-                <div className="project-header">
-                  <span className="project-icon">{project.icon}</span>
-                  <span className="project-name">{project.name}</span>
-                </div>
-                <div className="project-description">{project.description}</div>
-                <div className="project-members">👥 {project.memberNames}</div>
-                <div className="project-actions">
-                  <button onClick={(e) => { e.stopPropagation(); setFormData({ name: project.name, icon: project.icon, description: project.description, members: project.members}); setEditingProject(project); setShowForm(true); }}>Editar</button>
-                  <button onClick={(e) => { e.stopPropagation(); setProjectToDelete(project); }}>Eliminar</button>
-                </div>
-              </div>
+              <ProjectCard project={project} 
+                onDelete={() => setProjectToDelete(project)} 
+                onEdit={() => {
+                  setEditingProject(project); 
+                  setFormData({
+                    name: project.name,
+                    icon: project.icon,
+                    description: project.description,
+                    members: project.members
+                  });
+                  setShowForm(true);
+              }}/>
             ))}
           </div>
-          <button className="add-btn" onClick={() => {
-            setFormData({ name: "", icon: "", description: "", members: [] });
-            setEditingProject(null);
-            setShowForm(true);
-          }}>
-            Añadir Proyecto
-          </button>
+          <Boton clase="add-btn" onClick={handleAddProjectClick} contenido="Añadir Proyecto"/>
         </>
       )}
 
