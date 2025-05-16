@@ -20,11 +20,13 @@ export default function Stories({ epicId }) {
   const [storyToDelete, setStoryToDelete] = useState(null);
   const [message, setMessage] = useState(null);
   const [allUsers, setAllUsers] = useState([]);
+  const [ownerToken, setOwnerToken] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchStory();
     fetchUsuarios();
+    ownerObtener();
   }, [epicId]);
 
   const fetchStory = async () => {
@@ -138,7 +140,8 @@ export default function Stories({ epicId }) {
           status: story.status,
           description: story.description,
           owner: story.owner,
-          members: story.members
+          assignedTo: story.members,
+          epic: epicId,
         })
       });
 
@@ -172,7 +175,7 @@ export default function Stories({ epicId }) {
       return
     }  
     try {
-      const response = await fetch(`http://localhost:5100/project`, {
+      const response = await fetch(`http://localhost:5100/story`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -184,7 +187,8 @@ export default function Stories({ epicId }) {
           status: story.status,
           description: story.description,
           owner: story.owner,
-          members: story.members
+          assignedTo: story.members,
+          epic: epicId,
         })
       });
 
@@ -201,6 +205,30 @@ export default function Stories({ epicId }) {
     }
   };
 
+const ownerObtener = async () => {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    navigate("/login");
+    return;
+  }
+  try {
+    const response = await fetch(`http://localhost:5100/user/profile`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    if (await handleUnauthorized(response)) return;
+    const result = await response.json();
+    if (!response.ok) {
+      throw new Error(result.error || "Error desconocido al obtener el perfil del usuario");
+    }
+    setOwnerToken(result._id);
+  } catch (err) {
+    console.error('Error al obtener el perfil:', err);
+  }
+};
+
   const handleAddOrEdit = async (story) => {
     const token = localStorage.getItem("token");
     if (!token){
@@ -208,8 +236,8 @@ export default function Stories({ epicId }) {
       return
     } 
 
-    const { name, description, members, owner, points, status } = formData;
-    if (!name || !description || members.length === 0 || !owner || !status || !points){
+    const { name, description, members, points, status, owner = ownerToken } = formData;
+    if (!name || !description || members.length === 0 || !status || points === null || !owner){
       setMessage("No pueden haber campos vacíos");
       return;
     }
@@ -264,7 +292,8 @@ export default function Stories({ epicId }) {
         throw new Error("Error en la Comprobación de Epicas pendientes dentro del proyecto a eliminar");
       }
       const tasks = await res.json();
-      if (tasks.length !== 0) {
+      const pendingTasks = tasks.filter(task => !task.done);
+      if (pendingTasks.length !== 0) {
         setMessage("No puedes eliminar una Story que tiene tareas pendientes");
         //si ese proyecto tiene epicas entonces lo sacamos del estado de eliminar y salimos de la función mostrando en pantalla que no debe tener epicas para poder eliminarlo
         setStoryToDelete(null)
@@ -308,7 +337,7 @@ export default function Stories({ epicId }) {
     setEditingStory(null);
     setShowForm(true);
   }
-
+  console.log(ownerToken);
   return (
     <div className="epics-section">
       <h3>Storys</h3>
@@ -319,8 +348,12 @@ export default function Stories({ epicId }) {
           <div className="modal">
             <h3>{editingStory ? "Editar Story" : "Nueva Story"}</h3>
             <input type="text" placeholder="Nombre" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
-            <input type="text" placeholder="status" value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value })} />
-            <input type="text" placeholder="points" value={formData.points} onChange={(e) => setFormData({ ...formData, points: e.target.value })} />
+            <select value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value })}>
+              <option value="todo">Todo</option>
+              <option value="running">Running</option>
+              <option value="done">Done</option>
+            </select>
+            <input type="number" placeholder="points" value={formData.points} onChange={(e) => setFormData({ ...formData, points: e.target.value })} />
             <input type="text" placeholder="Descripción" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} />
             <div className="user-select-container">
               <p>Seleccionar miembros:</p>

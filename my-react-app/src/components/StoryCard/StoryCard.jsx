@@ -22,12 +22,10 @@ function StoryCard({ story, onEdit, onDelete }){
 
     return(
         <div key={story.id} className="project-card" onClick={handleNavigate}>
-            <div className="project-header">
-                <Span clase="project-name" contenido={story.name}/>
-                <Span clase="project-name" contenido={story.points}/> 
-                <Span clase="project-name" contenido={story.status}/> 
-            </div>
-            <div className="project-description">{story.description}</div>
+            <div className="project-name">Story: {story.name}</div>
+            <div className="project-name">Dificultad: {story.points}</div>
+            <div className="project-name">Estado: {story.status}</div>
+            <div className="project-description">Descripción: {story.description}</div>
             <div className="project-members">👥 Miembros: {story.memberNames}</div>
             <div className="project-members">👥 Owner: {story.ownerName}</div>
             <div className="project-actions">
@@ -39,3 +37,5 @@ function StoryCard({ story, onEdit, onDelete }){
 }
 
 export default StoryCard;
+
+
