@@ -5,6 +5,7 @@ import Loading from "../Loading/Loading";
 import Boton from "../../components/Boton/Boton";
 import TitulosH3 from "../../components/TitulosH3/TitulosH3";
 import EpicCard from "../../components/EpicCard/EpicCard";
+import ContenidoVacio from "../ContenidoVacio/ContenidoVacio"
 
 export default function Epics({ projectId }) {
   const [epics, setEpics] = useState([]);
@@ -205,6 +206,7 @@ const handleDelete = async (id) => {
         <Loading contenido="Epicas"/>
       ) : epics.length === 0 ? (
         <ContenidoVacio onClick={handleAddEpicClick} contenidoB="Añadir Épica" contenidoP="Epicas" />
+        
       ) : (
         <div className="epics-section">
           <TitulosH3 contenido="Épicas"></TitulosH3>
@@ -226,9 +228,9 @@ const handleDelete = async (id) => {
               }}/> 
             ))}
           </div>
-
-
-          {showForm && (
+        </div>
+      )}
+      {showForm && (
             <div className="modal-backdrop">
               <div className="modal">
                 <h3>{editingEpic ? "Editar Épica" : "Nueva Épica"}</h3>
@@ -263,8 +265,6 @@ const handleDelete = async (id) => {
               <button onClick={() => setMessage(null)}>Aceptar</button>
             </div>
           </div>
-        </div>
-      )}
         </div>
       )}
     </>
