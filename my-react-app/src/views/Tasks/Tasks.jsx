@@ -265,16 +265,7 @@ export default function Tasks({ storyId }) {
                             </div>
                         </div>
                     )}
-                    {message && (
-                        <div className="modal-backdrop">
-                            <div className="modal">
-                                <p>{message}</p>
-                                <div className="modal-buttons">
-                                    <button onClick={() => setMessage(null)}>Aceptar</button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
+                    
                 </div>
             )}
             {showForm && (
@@ -287,6 +278,17 @@ export default function Tasks({ storyId }) {
                                 <div className="modal-buttons">
                                     <button onClick={() => { setShowForm(false); setEditingTask(null); }}>Cancelar</button>
                                     <button onClick={() => handleAddOrEdit(formData)}>{editingTask ? "Guardar" : "Añadir"}</button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+            {message && (
+                        <div className="modal-backdrop">
+                            <div className="modal">
+                                <p>{message}</p>
+                                <div className="modal-buttons">
+                                    <button onClick={() => setMessage(null)}>Aceptar</button>
                                 </div>
                             </div>
                         </div>

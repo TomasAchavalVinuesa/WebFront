@@ -29,7 +29,7 @@ function StoryCard({ story, onEdit, onDelete }){
             </div>
             <div className="project-description">{story.description}</div>
             <div className="project-members">👥 Miembros: {story.memberNames}</div>
-            <div className="project-members">👥 Owner: {story.owner}</div>
+            <div className="project-members">👥 Owner: {story.ownerName}</div>
             <div className="project-actions">
                 <Boton onClick={handleEditClick} contenido="Editar"/>
                 <Boton onClick={handleDeleteClick} contenido="Eliminar"/>

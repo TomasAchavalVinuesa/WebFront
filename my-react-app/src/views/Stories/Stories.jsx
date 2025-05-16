@@ -47,6 +47,7 @@ export default function Stories({ epicId }) {
           const storiesFormateadas = await Promise.all(
             data.map(async (s) => {
               const memberNames = await fetchUserNames(s.assignedTo, token);
+              const ownerName = await fetchUserNames([s.owner], token);
               return {
                 id: s._id,
                 name: s.name,
@@ -55,6 +56,7 @@ export default function Stories({ epicId }) {
                 points: s.points,
                 status: s.status,
                 members: s.assignedTo,
+                ownerName: ownerName,
                 memberNames: memberNames.join(", "),
               };
             })
