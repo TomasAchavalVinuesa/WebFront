@@ -4,6 +4,7 @@ import Epics from "../Epics/Epics";
 import "./ProjectDetail.css";
 import HeaderVolver from "../../components/HeaderVolver/HeaderVolver";
 import Loading from "../Loading/Loading";
+import ProjectD from "../../components/ProjectD/ProjectD";
 
 export default function ProjectDetail() {
   const { projectid } = useParams();
@@ -89,15 +90,8 @@ export default function ProjectDetail() {
       ): (
         <div className="project-detail-container">
           <HeaderVolver contenido={`Proyect: ${project.name}`} />
-
-          <div className="project-detail-card">
-          <h2>Información del proyecto</h2>
-          <p><strong>Nombre:</strong> {project.name}</p>
-          <p><strong>Descripción:</strong> {project.description}</p>
-          <p><strong>Miembros:</strong> {project.memberNames}</p>
-          <p><strong>Icono:</strong> {project.icon}</p>
-        </div>
-        <Epics projectId={projectid} />
+          <ProjectD name={project.name} description={project.description} memberNames={project.memberNames} icon={project.icon}/>
+          <Epics projectId={projectid} />
         </div>
       )}
     </>
